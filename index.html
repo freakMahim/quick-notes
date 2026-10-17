@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f6f5f1">
+<title>Quick Notes — Keep your thoughts close</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+:root{--bg:#f6f5f1;--paper:#fffefa;--ink:#25251f;--muted:#85857c;--line:#e8e6de;--green:#416b52;--green-soft:#e8f0e8;--shadow:0 12px 36px #393a2610}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh}
+button,input,textarea{font:inherit}button{cursor:pointer}
+.app{width:min(1180px,calc(100% - 40px));margin:auto;padding:28px 0 36px}
+header{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:38px}
+.brand{display:flex;align-items:center;gap:12px;font:800 22px 'Manrope',sans-serif;letter-spacing:-.8px}
+.logo{width:40px;height:40px;display:grid;place-items:center;border-radius:13px;background:var(--green);color:white;box-shadow:0 5px 14px #416b5229}
+.logo svg{width:22px}.top-right{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}.status-dot{width:7px;height:7px;background:#5b9b69;border-radius:50%}
+.hero{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:26px}
+.eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--green);font-weight:700;margin-bottom:10px}
+h1{font:700 clamp(32px,5vw,46px)/1.12 'Manrope',sans-serif;letter-spacing:-1.8px;margin:0}
+.hero p{margin:10px 0 0;color:var(--muted);font-size:14px;line-height:1.6}
+.note-count{white-space:nowrap;border:1px solid var(--line);border-radius:999px;padding:10px 14px;background:#ffffff8a;color:#66685e;font-size:12px}
+.layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(320px,.8fr);gap:20px;align-items:start}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
+.panel-head{padding:21px 22px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.panel-title{font:700 16px 'Manrope',sans-serif}.sub{font-size:12px;color:var(--muted);margin-top:4px}
+.search-wrap{padding:0 22px 17px;position:relative}
+.search-icon{position:absolute;left:35px;top:12px;color:#939388;font-size:17px}
+.search{width:100%;border:1px solid var(--line);background:#f9f8f4;border-radius:11px;padding:12px 13px 12px 38px;outline:none;color:var(--ink);font-size:13px;transition:.2s}
+.search:focus,.title-input:focus,.editor:focus{border-color:#83a18a;box-shadow:0 0 0 3px #416b5212}
+.notes-list{padding:0 12px 13px;display:grid;gap:7px}
+.note-item{width:100%;text-align:left;border:1px solid transparent;border-radius:13px;background:transparent;padding:15px 14px;display:block;color:inherit;transition:.18s}
+.note-item:hover{background:#f7f6f0}.note-item.active{background:var(--green-soft);border-color:#d8e5d8}
+.note-item-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+.note-item-title{font-weight:700;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.note-item-date{font-size:10px;color:var(--muted);white-space:nowrap}
+.note-preview{font-size:12px;color:#85857b;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.list-bottom{padding:0 22px 19px;color:#99998f;font-size:11px}
+.editor-panel{padding:22px}
+.editor-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:20px}
+.editor-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;color:var(--muted)}
+.actions{display:flex;gap:7px}
+.btn{border:1px solid var(--line);background:white;color:#64645b;border-radius:10px;padding:9px 12px;font-size:12px;font-weight:600;transition:.15s}
+.btn:hover{background:#f5f4ee}.btn.primary{background:var(--green);border-color:var(--green);color:white}.btn.primary:hover{background:#345840}
+.btn.danger{color:#b7554e}.btn.danger:hover{background:#fff1ee;border-color:#f1d4cf}
+.title-input{width:100%;border:1px solid transparent;background:transparent;padding:8px 0 12px;font:700 26px 'Manrope',sans-serif;letter-spacing:-.8px;outline:none;border-radius:7px;color:var(--ink)}
+.title-input::placeholder{color:#b9b8af}
+.editor{display:block;width:100%;min-height:290px;resize:vertical;border:1px solid transparent;border-radius:9px;background:transparent;padding:8px 0;color:#57584f;line-height:1.85;font-size:14px;outline:none}
+.editor::placeholder{color:#aaa99f}
+.editor-meta{border-top:1px solid var(--line);padding-top:13px;display:flex;justify-content:space-between;gap:10px;color:#99998e;font-size:11px}
+.save-status{color:var(--green);font-weight:600}
+.empty{padding:40px 22px;text-align:center;color:var(--muted)}
+.empty-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:15px;background:var(--green-soft);color:var(--green);font-size:22px;margin:0 auto 13px}
+.empty strong{display:block;color:#45463e;font-size:13px;margin-bottom:6px}.empty p{font-size:12px;line-height:1.6;margin:0 auto 15px;max-width:240px}
+.footer{display:flex;justify-content:space-between;gap:12px;color:#99998e;font-size:11px;margin-top:23px}
+.toast{position:fixed;left:50%;bottom:25px;transform:translate(-50%,15px);opacity:0;pointer-events:none;background:#263d2d;color:white;border-radius:12px;padding:11px 16px;font-size:12px;box-shadow:0 10px 30px #0002;transition:.2s;z-index:5}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.notes-list{grid-template-columns:repeat(2,minmax(0,1fr))}.note-item{border-color:var(--line)}.editor{min-height:230px}}
+@media(max-width:520px){.app{width:calc(100% - 24px);padding-top:18px}header{margin-bottom:28px}.brand{font-size:19px}.logo{width:36px;height:36px}.top-right{font-size:10px}.hero{align-items:start;flex-direction:column;gap:13px}.note-count{padding:8px 11px}.panel-head{padding:18px 15px 14px}.search-wrap{padding:0 15px 14px}.search-icon{left:28px}.notes-list{padding:0 10px 11px;grid-template-columns:1fr 1fr;gap:6px}.note-item{padding:12px 10px}.note-item-date{display:none}.note-item-title{font-size:12px}.note-preview{font-size:11px}.list-bottom{padding:0 15px 15px}.editor-panel{padding:17px}.title-input{font-size:23px}.editor{min-height:220px}.footer{flex-direction:column}}
+</style>
+</head>
+<body>
+<main class="app">
+<header>
+  <div class="brand"><div class="logo"><svg viewBox="0 0 24 24" fill="none"><path d="M7 4.5h7l4 4V20H7a2 2 0 0 1-2-2V6.5a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 4.5v4h4M8.5 12h7M8.5 15.5h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>Quick Notes</div>
+  <div class="top-right"><span class="status-dot"></span> Saved on this device</div>
+</header>
+<section class="hero">
+  <div><div class="eyebrow">A little space for your thoughts</div><h1>Catch that <span style="color:var(--green)">thought.</span></h1><p>Ideas, reminders, random sparks. Keep them all in one calm place.</p></div>
+  <div class="note-count" id="noteCount">0 notes</div>
+</section>
+<section class="layout">
+  <div class="panel">
+    <div class="panel-head"><div><div class="panel-title">Your notes</div><div class="sub">Everything worth remembering.</div></div><button class="btn primary" id="newNoteBtn" type="button">＋ New note</button></div>
+    <div class="search-wrap"><span class="search-icon">⌕</span><input class="search" id="searchInput" type="search" placeholder="Search your notes..." aria-label="Search notes"></div>
+    <div class="notes-list" id="notesList"></div>
+    <div class="list-bottom" id="listHint">Your thoughts stay private in this browser.</div>
+  </div>
+  <div class="panel editor-panel">
+    <div class="editor-top"><div class="editor-label" id="editorLabel">New note</div><div class="actions"><button class="btn danger" id="deleteBtn" type="button" disabled>Delete</button><button class="btn primary" id="saveBtn" type="button">Save note</button></div></div>
+    <input class="title-input" id="titleInput" maxlength="100" placeholder="Untitled note" aria-label="Note title">
+    <textarea class="editor" id="bodyInput" maxlength="20000" placeholder="Start writing here...&#10;&#10;No pressure. Just get it out of your head." aria-label="Note content"></textarea>
+    <div class="editor-meta"><span id="wordCount">0 words</span><span class="save-status" id="saveStatus">Ready when you are</span></div>
+  </div>
+</section>
+<footer class="footer"><span>© <span id="year"></span> Quick Notes</span><span>Made for the thoughts that matter. ✦</span></footer>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+const KEY='quick-notes-v1';
+const $=s=>document.querySelector(s);
+let notes=loadNotes(), activeId=null, draftId=null, dirty=false, searchTerm='', saveTimer=null, toastTimer=null;
+function loadNotes(){try{const data=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(data)?data.filter(n=>n&&typeof n.title==='string'&&typeof n.body==='string'):[]}catch{return[]}}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(notes));return true}catch{showToast('Could not save. Browser storage may be full.');return false}}
+function uid(){return crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2)}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function shortDate(iso){const d=new Date(iso);return isNaN(d)?'Just now':d.toLocaleDateString(undefined,{month:'short',day:'numeric'})}
+function showToast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2200)}
+function currentNote(){return notes.find(n=>n.id===activeId)||null}
+function getDraft(){return {id:activeId||draftId,title:$('#titleInput').value.trim(),body:$('#bodyInput').value,createdAt:currentNote()?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()}}
+function renderList(){
+ const filtered=notes.filter(n=>(n.title+' '+n.body).toLowerCase().includes(searchTerm.toLowerCase())).sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt));
+ $('#noteCount').textContent=`${notes.length} ${notes.length===1?'note':'notes'}`;
+ if(!filtered.length){$('#notesList').innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-icon">✎</div><strong>${searchTerm?'No notes found':'Your page is still blank'}</strong><p>${searchTerm?'Try another search term.':'Create a note and give that thought a home.'}</p>${searchTerm?'':'<button class="btn" id="emptyCreate">Create your first note</button>'}</div>`;$('#emptyCreate')?.addEventListener('click',newNote);$('#listHint').textContent=searchTerm?'Search across titles and note content.':'Your thoughts stay private in this browser.';return}
+ $('#notesList').innerHTML=filtered.map(n=>`<button type="button" class="note-item ${n.id===activeId?'active':''}" data-id="${esc(n.id)}"><div class="note-item-top"><span class="note-item-title">${esc(n.title||'Untitled note')}</span><span class="note-item-date">${shortDate(n.updatedAt)}</span></div><div class="note-preview">${esc(n.body.trim()||'No additional text yet.')}</div></button>`).join('');
+ $('#listHint').textContent=`${filtered.length} ${filtered.length===1?'note':'notes'} shown · Sorted by last updated`;
+}
+function updateWords(){const text=$('#bodyInput').value.trim();const words=text?text.split(/\s+/).length:0;$('#wordCount').textContent=`${words} ${words===1?'word':'words'}`;dirty=true;$('#saveStatus').textContent='Unsaved changes';clearTimeout(saveTimer);saveTimer=setTimeout(()=>{if($('#titleInput').value.trim()||$('#bodyInput').value.trim())saveNote(true)},900)}
+function setEditor(n){activeId=n?.id||null;draftId=null;$('#titleInput').value=n?.title||'';$('#bodyInput').value=n?.body||'';$('#editorLabel').textContent=n?'Edit note':'New note';$('#deleteBtn').disabled=!n;$('#saveBtn').textContent=n?'Save changes':'Save note';$('#wordCount').textContent=`${($('#bodyInput').value.trim().match(/\S+/g)||[]).length} ${($('#bodyInput').value.trim().match(/\S+/g)||[]).length===1?'word':'words'}`;$('#saveStatus').textContent=n?'Saved locally':'Ready when you are';dirty=false;renderList()}
+function newNote(){clearTimeout(saveTimer);if(dirty)saveNote(true);setEditor(null);draftId=uid();$('#titleInput').focus()}
+function saveNote(quiet=false){
+ clearTimeout(saveTimer);
+ const title=$('#titleInput').value.trim(),body=$('#bodyInput').value;
+ if(!title&&!body.trim()){if(!quiet)showToast('Write a title or a little note first.');return}
+ const now=new Date().toISOString();let note=currentNote();
+ if(note){note.title=title||'Untitled note';note.body=body;note.updatedAt=now}
+ else {note={id:draftId||uid(),title:title||'Untitled note',body,createdAt:now,updatedAt:now};notes.unshift(note);activeId=note.id;draftId=null}
+ const ok=persist();dirty=false;$('#editorLabel').textContent='Edit note';$('#deleteBtn').disabled=false;$('#saveBtn').textContent='Save changes';$('#saveStatus').textContent=ok?'Saved just now':'Save failed';renderList();if(!quiet)showToast('Note saved ✨');
+}
+function deleteNote(){
+ const n=currentNote();if(!n){setEditor(null);return}
+ if(!confirm(`Delete "${n.title||'Untitled note'}"? This cannot be undone.`))return;
+ notes=notes.filter(x=>x.id!==n.id);persist();setEditor(null);showToast('Note deleted.');
+}
+$('#newNoteBtn').addEventListener('click',newNote);
+$('#saveBtn').addEventListener('click',()=>saveNote(false));
+$('#deleteBtn').addEventListener('click',deleteNote);
+$('#searchInput').addEventListener('input',e=>{searchTerm=e.target.value.trim();renderList()});
+$('#notesList').addEventListener('click',e=>{const item=e.target.closest('[data-id]');if(!item)return;if(dirty)saveNote(true);const n=notes.find(x=>x.id===item.dataset.id);if(n)setEditor(n)});
+$('#titleInput').addEventListener('input',()=>{dirty=true;$('#saveStatus').textContent='Unsaved changes';clearTimeout(saveTimer);saveTimer=setTimeout(()=>{if($('#titleInput').value.trim()||$('#bodyInput').value.trim())saveNote(true)},900)});
+$('#bodyInput').addEventListener('input',updateWords);
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();saveNote(false)}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='n'){e.preventDefault();newNote()}});
+$('#year').textContent=new Date().getFullYear();
+renderList();setEditor(null);
+</script>
+</body>
+</html>
